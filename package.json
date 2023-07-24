@@ -1,0 +1,36 @@
+{
+  "name": "tickets-api",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/myvicc/tickets-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/myvicc/tickets-api/issues"
+  },
+  "homepage": "https://github.com/myvicc/tickets-api#readme",
+  "devDependencies": {
+    "node-fetch": "^3.3.1",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.0"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.8.1",
+    "@graphql-tools/schema": "^10.0.0",
+    "apollo-server-express": "^3.12.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "graphql": "^16.7.1"
+  }
+}
