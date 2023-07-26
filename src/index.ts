@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import { typeDefs } from './graphql/ticket.type';
 import { resolvers } from './graphql/ticket.resolver';
 import router from './rest/routes/get.ticskets';
+
 const port = 3040;
 async function bootstrap() {
   const app = express();

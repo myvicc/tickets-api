@@ -1,78 +1,39 @@
-import { httpClient } from '../httpClient';
 import {
-  DataPrices,
-  DataSection,
-  DataSeat,
-  PriceData,
-  SectionData,
-  ResponseSeatStatus,
-  ResponseSeat,
-} from '../types';
-
+  getPriceData,
+  getSeatData,
+  getSeatStatusData,
+  getSectionData,
+} from './getDataFromApi';
+import { DataPrices, DataSeat, DataSection } from '../types';
 export const getAvailableTicket = async (eventId: string) => {
-  let idOfAvailableSeat: number,
-    dataPrices: [DataPrices],
-    dataSeat: [DataSeat],
-    dataSection: [DataSection],
-    tickets;
+  let tickets;
   try {
-    const { data: priceData } = await httpClient.get(
+    const dataPrices = await getPriceData(
       `/TXN/Packages/${eventId}/Prices?expandPerformancePriceType=&includeOnlyBasePrice=&modeOfSaleId=26&priceTypeId=&sourceId=30885`,
     );
-    const filteredData = priceData.filter(
-      (item: PriceData) => item['PerformanceId'] === 8444,
-    );
-    dataPrices = filteredData.map((item: Omit<PriceData, 'PerformanceId'>) => {
-      return {
-        zoneId: item.ZoneId,
-        price: item.Price,
-      };
-    });
-
-    const { data: sectionData } = await httpClient.get(
+    const dataSection = await getSectionData(
       '/ReferenceData/Sections?seatMapId=12',
     );
 
-    dataSection = sectionData.map((item: SectionData) => {
-      return {
-        sectionId: item.Id,
-        sectionName: item.Description,
-      };
-    });
-
-    const { data: responseSeatStatus } = await httpClient.get(
+    const idOfAvailableSeat = await getSeatStatusData(
       '/ReferenceData/SeatStatuses',
     );
-    const availableSeat = responseSeatStatus.find(
-      (seat: ResponseSeatStatus) => seat.Description === 'Available',
-    );
-    idOfAvailableSeat = availableSeat.Id;
 
-    const { data: responseSeat } = await httpClient.get(
+    const dataSeat = await getSeatData(
       `/TXN/Packages/${eventId}/Seats?constituentId=0&modeOfSaleId=26&packageId=${eventId}`,
+      idOfAvailableSeat,
     );
-
-    const availableData = responseSeat.filter(
-      (item: ResponseSeat) => item['SeatStatusId'] === idOfAvailableSeat,
-    );
-
-    dataSeat = availableData.map((seat: Omit<ResponseSeat, 'SeatStatusId'>) => {
-      return {
-        section: seat.SectionId,
-        row: seat.SeatRow,
-        seatNumber: seat.SeatNumber,
-        zonaId: seat.ZoneId,
-      };
-    });
 
     tickets = dataSeat.map((seat: DataSeat) => {
       return {
         section: dataSection.find(
-          (section) => section.sectionId === seat.section,
+          (section: DataSection) => section.sectionId === seat.section,
         )?.sectionName,
         row: seat.row,
         seatNumber: seat.seatNumber,
-        price: dataPrices.find((item) => item.zoneId === seat.zonaId)?.price,
+        price: dataPrices.find(
+          (item: DataPrices) => item.zoneId === seat.zonaId,
+        )?.price,
       };
     });
 
